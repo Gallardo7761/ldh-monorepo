@@ -1,4 +1,4 @@
-#define PRO_MINI // PRO_MINI o NANO
+#define NANO // PRO_MINI o NANO
 
 #define MY_RADIO_RF24
 #define MY_DEBUG
@@ -54,7 +54,7 @@
   MyMessage ch_comm_dht_temperature(DHT_ID_TEM, V_TEMP);
   MyMessage ch_comm_dht_humidity(DHT_ID_HUM, V_HUM);
 
-  const float VccMin = 3.7;
+  const float VccMin = 3.0;
   const float VccMax = 4.2;
   Vcc vcc;
 
@@ -127,9 +127,10 @@ void loop()
     }
   
     int voltage = Vcc::measure(100, 1100);
-    int batteryPercent = static_cast<int>(100.0 * (voltage - VccMin) / (VccMax - VccMin));
-    if (batteryPercent > 100) batteryPercent = 100;
-    if (batteryPercent < 0)   batteryPercent = 0;
+    int voltageV = voltage / 1000.0;
+
+    int batteryPercent = static_cast<int>(100.0 * (voltageV - VccMin) / (VccMax - VccMin));
+    batteryPercent = constrain(batteryPercent, 0, 100);
 
     sendBatteryLevel(batteryPercent);  // función de MySensor que envía el procentaje
 
